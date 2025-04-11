@@ -43,9 +43,22 @@ def home():
         movies = [m for m in movies if genre_filter in m.genres.split(", ")]
 
     genres = sorted(set(genre for m in Movie.query.all() for genre in m.genres.split(", ") if genre))
-    return render_template("index.html", movies=movies, genres=genres, selected_genre=genre_filter, search_query=search_query)
 
-# STEP 1: Search movies
+    return render_template("index.html", movies=movies, genres=genres,
+                           selected_genre=genre_filter, search_query=search_query)
+
+@app.route("/stats")
+def stats():
+    genre_counts = {}
+    for movie in Movie.query.all():
+        for genre in movie.genres.split(", "):
+            if genre:
+                genre_counts[genre] = genre_counts.get(genre, 0) + 1
+
+    sorted_genres = sorted(genre_counts.items(), key=lambda x: x[1], reverse=True)
+
+    return render_template("stats.html", genre_stats=sorted_genres)
+
 @app.route("/add", methods=["GET", "POST"])
 def add():
     form = AddForm()
@@ -64,13 +77,11 @@ def add():
             return redirect(url_for("add"))
     return render_template("add.html", form=form)
 
-# STEP 2: Add selected movie by TMDb ID
 @app.route("/add_movie/<int:tmdb_id>")
 def add_movie(tmdb_id):
     try:
         details = requests.get(f"{TMDB_DETAILS_URL}{tmdb_id}", params={"api_key": TMDB_API_KEY}).json()
-
-        genre_ids = details.get("genres", [])  # These are already resolved names, not IDs
+        genre_ids = details.get("genres", [])
         resolved_genres = [genre["name"] for genre in genre_ids]
 
         new_movie = Movie(
