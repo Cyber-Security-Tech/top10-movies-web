@@ -17,6 +17,11 @@
                 <div class="floating-label">
                     {{ form.title(class="form-control", placeholder=" ") }}
                     <label for="title">Search TMDb by Title</label>
+                    {% if form.title.errors %}
+                        <div class="form-error">
+                            {{ form.title.errors[0] }}
+                        </div>
+                    {% endif %}
                 </div>
 
                 <button type="submit" class="btn-glow mt-3">➕ Search & Add</button>
