@@ -1,0 +1,211 @@
+
+body {
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    background: linear-gradient(to right, #f7f7f7, #fdfdfd);
+    color: #222;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    min-height: 100vh;
+
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+body.fade-in {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* PAGE TITLES */
+h1, .page-title {
+    font-size: 2.4rem;
+    font-weight: 700;
+    text-align: center;
+    color: #1c1c1c;
+    margin-bottom: 2rem;
+}
+
+/* CONTAINER */
+.container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+/* MOVIE ITEM LAYOUT */
+.movie-item {
+    display: flex;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+    margin-bottom: 24px;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.movie-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.movie-img {
+    width: 140px;
+    height: 210px;
+    object-fit: cover;
+    border-right: 1px solid #e0e0e0;
+    flex-shrink: 0;
+}
+
+.movie-content {
+    padding: 24px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.movie-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+}
+
+.movie-year {
+    font-size: 0.9rem;
+    color: #777;
+}
+
+.movie-rating {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #0d6efd;
+    margin-left: auto;
+    white-space: nowrap;
+}
+
+.movie-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.movie-description {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 14px;
+    color: #444;
+}
+
+.movie-genres {
+    margin-bottom: 12px;
+}
+
+.movie-genres .badge {
+    background: #f0f0f0;
+    color: #333;
+    padding: 6px 12px;
+    margin-right: 6px;
+    border-radius: 10px;
+    font-size: 0.75rem;
+}
+
+/* FORM WRAPPER */
+.form-wrapper {
+    max-width: 520px;
+    margin: 80px auto 40px;
+    padding: 40px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.1);
+    animation: fadeSlideIn 0.6s ease;
+}
+
+/* FLOATING LABEL FORMS */
+.floating-label {
+    position: relative;
+    margin-bottom: 30px;
+}
+
+.floating-label input,
+.floating-label textarea {
+    width: 100%;
+    padding: 16px 12px 10px;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    font-size: 1rem;
+    background: transparent;
+    outline: none;
+    transition: border 0.2s;
+}
+
+.floating-label input:focus,
+.floating-label textarea:focus {
+    border-color: #0d6efd;
+}
+
+.floating-label label {
+    position: absolute;
+    left: 12px;
+    top: 16px;
+    font-size: 1rem;
+    color: #777;
+    pointer-events: none;
+    transition: 0.2s ease all;
+}
+
+.floating-label input:focus + label,
+.floating-label input:not(:placeholder-shown) + label,
+.floating-label textarea:focus + label,
+.floating-label textarea:not(:placeholder-shown) + label {
+    top: 4px;
+    font-size: 0.75rem;
+    color: #0d6efd;
+}
+
+/* BUTTONS */
+.btn-glow {
+    background: #0d6efd;
+    color: white;
+    padding: 14px;
+    font-weight: bold;
+    font-size: 1rem;
+    border-radius: 12px;
+    width: 100%;
+    border: none;
+    transition: background 0.25s ease, box-shadow 0.25s ease;
+    box-shadow: 0 4px 18px rgba(13, 110, 253, 0.2);
+}
+
+.btn-glow:hover {
+    background: #084fbc;
+    box-shadow: 0 6px 24px rgba(13, 110, 253, 0.3);
+}
+
+/* ACTIONS */
+.movie-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.movie-actions a {
+    font-size: 0.85rem;
+    padding: 6px 14px;
+    font-weight: 600;
+    border-radius: 10px;
+}
+
+/* ANIMATIONS */
+@keyframes fadeSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

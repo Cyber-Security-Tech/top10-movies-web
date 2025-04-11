@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add a Movie</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <div class="container">
+        <div class="form-wrapper">
+            <div class="page-title">Add a Movie</div>
+            <form method="POST">
+                {{ form.hidden_tag() }}
+
+                <div class="floating-label">
+                    {{ form.title(class="form-control", placeholder=" ") }}
+                    <label for="title">Search TMDb by Title</label>
+                </div>
+
+                <button type="submit" class="btn-glow mt-3">➕ Search & Add</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.body.classList.add("fade-in");
+        });
+    </script>
+
+</body>
+</html>
