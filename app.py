@@ -34,7 +34,7 @@ load_genres()
 def home():
     search_query = request.args.get("q")
     genre_filter = request.args.get("genre")
-    
+
     movies = Movie.query.order_by(Movie.rating.desc()).all()
 
     if search_query:
@@ -50,7 +50,9 @@ def home():
 @app.route("/stats")
 def stats():
     genre_counts = {}
-    for movie in Movie.query.all():
+    all_movies = Movie.query.all()
+
+    for movie in all_movies:
         for genre in movie.genres.split(", "):
             if genre:
                 genre_counts[genre] = genre_counts.get(genre, 0) + 1
