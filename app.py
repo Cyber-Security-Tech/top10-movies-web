@@ -45,6 +45,7 @@ def home():
     genres = sorted(set(genre for m in Movie.query.all() for genre in m.genres.split(", ") if genre))
     return render_template("index.html", movies=movies, genres=genres, selected_genre=genre_filter, search_query=search_query)
 
+# STEP 1: Search movies
 @app.route("/add", methods=["GET", "POST"])
 def add():
     form = AddForm()
@@ -55,30 +56,40 @@ def add():
             response.raise_for_status()
             data = response.json().get("results")
             if not data:
-                flash("No results found for that movie title. Try something else.")
+                flash("No results found. Try a different title.")
                 return redirect(url_for("add"))
-
-            movie_id = data[0]["id"]
-            details = requests.get(f"{TMDB_DETAILS_URL}{movie_id}", params={"api_key": TMDB_API_KEY}).json()
-            new_movie = Movie(
-                title=details["title"],
-                year=details["release_date"].split("-")[0] if details.get("release_date") else "N/A",
-                description=details.get("overview", "No description available."),
-                rating=0.0,
-                review="",
-                img_url=f"https://image.tmdb.org/t/p/w500{details['poster_path']}" if details.get("poster_path") else "",
-                genres=", ".join([GENRE_MAP.get(gid, "Unknown") for gid in details.get("genre_ids", [])])
-            )
-            db.session.add(new_movie)
-            db.session.commit()
-            return redirect(url_for("edit", movie_id=new_movie.id))
-
-        except requests.RequestException as e:
-            print(f"TMDb API error: {e}")
-            flash("Failed to connect to TMDb API. Check your API key or internet connection.")
+            return render_template("select.html", results=data)
+        except requests.RequestException:
+            flash("Failed to connect to TMDb.")
             return redirect(url_for("add"))
-
     return render_template("add.html", form=form)
+
+# STEP 2: Add selected movie by TMDb ID
+@app.route("/add_movie/<int:tmdb_id>")
+def add_movie(tmdb_id):
+    try:
+        details = requests.get(f"{TMDB_DETAILS_URL}{tmdb_id}", params={"api_key": TMDB_API_KEY}).json()
+
+        genre_ids = details.get("genres", [])  # These are already resolved names, not IDs
+        resolved_genres = [genre["name"] for genre in genre_ids]
+
+        new_movie = Movie(
+            title=details["title"],
+            year=details["release_date"].split("-")[0] if details.get("release_date") else "N/A",
+            description=details.get("overview", "No description available."),
+            rating=0.0,
+            review="",
+            img_url=f"https://image.tmdb.org/t/p/w500{details['poster_path']}" if details.get("poster_path") else "",
+            genres=", ".join(resolved_genres)
+        )
+
+        db.session.add(new_movie)
+        db.session.commit()
+        return redirect(url_for("edit", movie_id=new_movie.id))
+
+    except requests.RequestException:
+        flash("Error fetching movie details.")
+        return redirect(url_for("add"))
 
 @app.route("/edit/<int:movie_id>", methods=["GET", "POST"])
 def edit(movie_id):

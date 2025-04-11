@@ -27,6 +27,20 @@
             font-size: 0.95rem;
             color: #333;
         }
+        .badge-clickable {
+            background: #f0f0f0;
+            color: #333;
+            padding: 6px 12px;
+            margin-right: 6px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .badge-clickable:hover {
+            background-color: #0d6efd;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -45,6 +59,10 @@
             </select>
             <button class="btn btn-dark" type="submit">Search</button>
         </form>
+
+        {% if selected_genre %}
+            <p class="text-center text-muted mb-4">Filtered by genre: <strong>{{ selected_genre }}</strong> — <a href="{{ url_for('home') }}">Clear</a></p>
+        {% endif %}
 
         {% for movie in movies %}
         <div class="movie-item">
@@ -86,7 +104,7 @@
 
                     <div class="movie-genres">
                         {% for genre in movie.genres.split(", ") %}
-                            <span class="badge">{{ genre }}</span>
+                            <a href="{{ url_for('home', genre=genre) }}" class="badge-clickable">{{ genre }}</a>
                         {% endfor %}
                     </div>
                 </div>
