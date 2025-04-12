@@ -4,143 +4,104 @@
   <meta charset="UTF-8">
   <title>Top 10 Movies</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-  <style>
-    body {
-      padding-bottom: 60px;
-      background-color: #f9f9f9;
-      overflow-x: hidden;
-    }
-    .top-actions {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 1rem;
-      margin-bottom: 30px;
-    }
-    .star-container {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-    .star svg {
-      width: 20px;
-      height: 20px;
-    }
-    .star.gold svg path {
-      fill: #f5c518;
-    }
-    .star.grey svg path {
-      fill: #d6d6d6;
-    }
-    .numeric-rating {
-      margin-left: 8px;
-      font-weight: 600;
-      font-size: 0.95rem;
-      color: #333;
-    }
-    .badge-clickable {
-      background: #f0f0f0;
-      color: #333;
-      padding: 6px 12px;
-      margin-right: 6px;
-      border-radius: 10px;
-      font-size: 0.75rem;
-      cursor: pointer;
-      text-decoration: none;
-    }
-    .badge-clickable:hover {
-      background-color: #0d6efd;
-      color: white;
-    }
-  </style>
+  <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+  <script>
+    window.addEventListener("DOMContentLoaded", () => {
+      document.body.classList.add("fade-in");
+    });
+  </script>
 </head>
 <body>
 
-<div class="container py-4">
-  <h1 class="text-center mb-4">🎬 My Top 10 Movies</h1>
+<div class="container">
 
-  <!-- 🎯 Top Action Bar -->
-  <div class="top-actions">
-    <a href="{{ url_for('add') }}" class="btn btn-success">➕ Add Movie</a>
-    <a href="{{ url_for('stats') }}" class="btn btn-outline-dark">📊 View Genre Stats</a>
-  </div>
+  <h1 class="page-title">🎬 Top 10 Movies</h1>
 
-  <!-- 🔍 Search + Filter -->
-  <form class="d-flex justify-content-center mb-5" method="GET" action="{{ url_for('home') }}">
-    <input class="form-control me-2 w-50" type="search" name="q" placeholder="Search by title..." value="{{ search_query or '' }}">
-    <select class="form-select me-2 w-25" name="genre">
-      <option {% if not selected_genre or selected_genre == 'All' %}selected{% endif %}>All</option>
-      {% for genre in genres %}
-      <option value="{{ genre }}" {% if genre == selected_genre %}selected{% endif %}>{{ genre }}</option>
+  <!-- Flash Messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} text-center">
+          {{ message }}
+        </div>
       {% endfor %}
-    </select>
-    <button class="btn btn-dark" type="submit">Search</button>
+    {% endif %}
+  {% endwith %}
+
+  <!-- Search + Genre Filter -->
+  <form method="GET" action="{{ url_for('home') }}" class="row align-items-end g-3 mb-5">
+    <div class="col-md-6">
+      <label for="q" class="form-label">Search</label>
+      <input type="text" name="q" id="q" class="form-control" placeholder="Search movies..." value="{{ search_query or '' }}">
+    </div>
+    <div class="col-md-4">
+      <label for="genre" class="form-label">Filter by Genre</label>
+      <select name="genre" id="genre" class="form-select">
+        <option value="All">All Genres</option>
+        {% for genre in genres %}
+          <option value="{{ genre }}" {% if genre == selected_genre %}selected{% endif %}>{{ genre }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2">
+      <button type="submit" class="btn btn-glow w-100">Apply</button>
+    </div>
   </form>
 
-  {% if selected_genre %}
-    <p class="text-center text-muted mb-4">Filtered by genre: <strong>{{ selected_genre }}</strong> — <a href="{{ url_for('home') }}">Clear</a></p>
-  {% endif %}
-
+  <!-- Movie Cards -->
   {% for movie in movies %}
-  <div class="movie-item">
-    <img src="{{ movie.img_url }}" alt="{{ movie.title }}" class="movie-img">
-    <div class="movie-content">
-      <div>
+    <div class="movie-item">
+      <img src="{{ movie.img_url }}" alt="{{ movie.title }}" class="movie-img">
+      <div class="movie-content">
         <div class="movie-header">
           <div>
             <div class="movie-title">{{ movie.title }}</div>
             <div class="movie-year">{{ movie.year }}</div>
           </div>
-          <div class="star-container">
-            {% set full_stars = (movie.rating // 2) | int %}
+          <div class="movie-rating">
+            {% set full_stars = (movie.rating / 2) | round(0, 'floor') %}
             {% set empty_stars = 5 - full_stars %}
-
-            {% for i in range(full_stars) %}
-              <span class="star gold">
-                <svg viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.122-6.545L.488 6.91l6.566-.955L10 0l2.946 5.955 6.566.955-4.756 4.635 1.122 6.545z"/></svg>
-              </span>
+            {% for i in range(full_stars|int) %}
+              <span class="star">&#9733;</span>
             {% endfor %}
-            {% for i in range(empty_stars) %}
-              <span class="star grey">
-                <svg viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.122-6.545L.488 6.91l6.566-.955L10 0l2.946 5.955 6.566.955-4.756 4.635 1.122 6.545z"/></svg>
-              </span>
+            {% for i in range(empty_stars|int) %}
+              <span class="star grey">&#9733;</span>
             {% endfor %}
-            <span class="numeric-rating">{{ movie.rating }}/10</span>
+            ({{ movie.rating }}/10)
           </div>
         </div>
 
-        {% if movie.description %}
-          <p class="movie-description">{{ movie.description[:200] }}{% if movie.description|length > 200 %}...{% endif %}</p>
-        {% endif %}
-
-        {% if movie.review %}
-          <p class="movie-description" style="font-style: italic; color: #555;">
-            <strong>My Review:</strong> {{ movie.review[:250] }}{% if movie.review|length > 250 %}...{% endif %}
-          </p>
-        {% endif %}
+        <div class="movie-description">{{ movie.description }}</div>
 
         <div class="movie-genres">
-          {% for genre in movie.genres.split(", ") %}
-            <a href="{{ url_for('home', genre=genre) }}" class="badge-clickable">{{ genre }}</a>
+          {% for genre in movie.genres.split(', ') %}
+            <span class="badge">{{ genre }}</span>
           {% endfor %}
         </div>
-      </div>
 
-      <div class="movie-actions">
-        <a href="{{ url_for('edit', movie_id=movie.id) }}" class="btn btn-outline-primary btn-sm">Edit</a>
-        <a href="{{ url_for('delete', movie_id=movie.id) }}" class="btn btn-outline-danger btn-sm" onclick="return confirm('Delete this movie?')">Delete</a>
+        <div><strong>Your Review:</strong> {{ movie.review }}</div>
+
+        <div class="movie-actions mt-3">
+          <a href="{{ url_for('edit', movie_id=movie.id) }}" class="btn btn-outline-primary">Edit</a>
+          <a href="{{ url_for('delete', movie_id=movie.id) }}" class="btn btn-outline-danger">Delete</a>
+        </div>
       </div>
     </div>
-  </div>
   {% endfor %}
+
+  {% if not movies %}
+    <div class="alert alert-warning text-center mt-5">
+      No movies found. Try adjusting your filters or search.
+    </div>
+  {% endif %}
+
 </div>
 
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    document.body.classList.add("fade-in");
-  });
-</script>
+<!-- Floating Buttons -->
+<div class="btn-floating">
+  <a href="{{ url_for('stats') }}" class="btn btn-outline-info me-2">📊 View Stats</a>
+  <a href="{{ url_for('add') }}" class="btn btn-success">➕ Add Movie</a>
+</div>
 
 </body>
 </html>

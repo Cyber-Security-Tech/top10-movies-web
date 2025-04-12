@@ -9,4 +9,4 @@ class Movie(db.Model):
     rating = db.Column(db.Float)
     review = db.Column(db.Text)
     img_url = db.Column(db.String(500))
-    genres = db.Column(db.String(250))  
+    genres = db.Column(db.String(250))
