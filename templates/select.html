@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Select Movie</title>
+  <title>Select a Movie</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
   <script>
@@ -10,69 +10,84 @@
       document.body.classList.add("fade-in");
     });
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <style>
-    .select-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 24px;
-    }
-
-    .select-card {
-      background: rgba(255, 255, 255, 0.85);
-      border-radius: 16px;
-      padding: 20px;
-      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
-      backdrop-filter: blur(12px);
-      transition: all 0.3s ease;
+    .movie-card {
+      background-color: #f8f9fa;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 24px;
+      transition: transform 0.2s ease;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+      height: 100%;
       display: flex;
       flex-direction: column;
-      height: 100%;
+      justify-content: space-between;
     }
 
-    .select-card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+    .movie-card:hover {
+      transform: scale(1.02);
     }
 
-    .select-card img {
-      border-radius: 12px;
-      width: 100%;
-      max-height: 400px;
+    .movie-card img {
+      border-radius: 10px;
       object-fit: cover;
+      height: 300px;
+      width: 100%;
+      margin-bottom: 10px;
     }
 
-    .select-card h3 {
+    .movie-card h3 {
       font-size: 1.1rem;
       font-weight: 600;
-      margin: 14px 0 10px;
+      margin-bottom: 10px;
     }
 
-    .select-card p {
+    .movie-card p {
       font-size: 0.9rem;
       color: #444;
-      margin-bottom: 16px;
       flex-grow: 1;
+    }
+
+    .btn-primary {
+      background-color: #0d6efd;
+      border: none;
+      transition: background-color 0.25s ease;
+    }
+
+    .btn-primary:hover {
+      background-color: #084fbc;
     }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <h1 class="page-title">🎯 Select a Movie</h1>
+  <h1 class="page-title">Select a Movie</h1>
 
-  <div class="select-grid">
+  <!-- Flash Messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show text-center" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <div class="row">
     {% for movie in results %}
-      <div class="select-card">
-        <img src="https://image.tmdb.org/t/p/w500{{ movie['poster_path'] }}" alt="{{ movie['title'] }}">
-        <h3>{{ movie['title'] }}</h3>
-        <p>{{ movie['overview'][:200] }}{% if movie['overview']|length > 200 %}...{% endif %}</p>
-        <a href="{{ url_for('select', movie_id=movie['id']) }}" class="btn btn-glow">Add This Movie</a>
+      <div class="col-md-4 d-flex">
+        <div class="movie-card w-100">
+          <img src="https://image.tmdb.org/t/p/w500{{ movie['poster_path'] }}" alt="{{ movie['title'] }}" class="img-fluid">
+          <h3>{{ movie['title'] }}</h3>
+          <p>{{ movie['overview'][:150] }}...</p>
+          <a href="{{ url_for('select', movie_id=movie['id']) }}" class="btn btn-primary w-100 mt-2">Add Movie</a>
+        </div>
       </div>
     {% endfor %}
-  </div>
-
-  <div class="text-center mt-5">
-    <a href="{{ url_for('add') }}" class="text-decoration-none">← Search Again</a>
   </div>
 </div>
 
