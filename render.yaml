@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: top10-movies-web
+    env: python
+    buildCommand: ""
+    startCommand: gunicorn run:app
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: TMDB_API_KEY
+        sync: false
+      - key: YOUTUBE_API_KEY
+        sync: false
+      - key: SECRET_KEY
+        sync: false

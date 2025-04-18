@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block title %}Top 10 Movies{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  <!-- Hero Header -->
+  <div class="hero-header text-center p-5 rounded-4 shadow-sm mb-4">
+    <h1 class="display-5 fw-bold mb-2">🎬 Top 10 Movies</h1>
+    <p class="lead text-muted mb-4">Your curated favorites, rated and reviewed</p>
+    <div class="d-flex justify-content-center gap-3">
+      <a href="{{ url_for('main.stats') }}" class="btn btn-outline-info">
+        <i class="bi bi-bar-chart"></i> View Stats
+      </a>
+      <a href="{{ url_for('main.add') }}" class="btn btn-success">
+        <i class="bi bi-plus-lg"></i> Add Movie
+      </a>
+    </div>
+  </div>
+
+  <!-- Flash Messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show text-center" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <!-- Premium Filter Bar -->
+  <div class="filter-bar card shadow-sm p-4 mb-4 rounded-4 bg-light">
+    <form method="GET" action="{{ url_for('main.home') }}" class="d-flex flex-wrap align-items-end gap-3 mb-0">
+
+      <div class="flex-grow-1">
+        <label for="q" class="form-label">Search</label>
+        <input type="text"
+               name="q"
+               id="q"
+               class="form-control"
+               placeholder="Search movies..."
+               value="{{ search_query or '' }}"
+               onkeypress="if(event.key === 'Enter'){ this.form.submit(); }">
+      </div>
+
+      <div>
+        <label for="genre" class="form-label">Genre</label>
+        <select name="genre" id="genre" class="form-select" onchange="this.form.submit()">
+          <option value="All">All Genres</option>
+          {% for genre in genres %}
+            <option value="{{ genre }}" {% if genre == selected_genre %}selected{% endif %}>{{ genre }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      {% if search_query or (selected_genre and selected_genre != "All") %}
+        <div class="align-self-end">
+          <a href="{{ url_for('main.home') }}" class="text-decoration-none small text-muted">✖ Reset Filters</a>
+        </div>
+      {% endif %}
+    </form>
+  </div>
+
+  <!-- Movie Cards -->
+  {% for movie in movies %}
+    <div class="movie-item">
+      <img src="{{ movie.img_url }}" alt="{{ movie.title }}" class="movie-img">
+      <div class="movie-content">
+        <div class="movie-header">
+          <div>
+            <div class="movie-title">{{ movie.title }}</div>
+            <div class="movie-year">{{ movie.year }}</div>
+          </div>
+          <div class="movie-rating">
+            {% set full_stars = (movie.rating / 2) | round(0, 'floor') %}
+            {% set empty_stars = 5 - full_stars %}
+            {% for i in range(full_stars|int) %}
+              <span class="star">&#9733;</span>
+            {% endfor %}
+            {% for i in range(empty_stars|int) %}
+              <span class="star grey">&#9733;</span>
+            {% endfor %}
+            ({{ movie.rating }}/10)
+          </div>
+        </div>
+
+        <div class="movie-description">{{ movie.description }}</div>
+
+        <div class="movie-genres">
+          {% for genre in movie.genres.split(', ') %}
+            <a href="{{ url_for('main.home', genre=genre) }}" class="badge">{{ genre }}</a>
+          {% endfor %}
+        </div>
+
+        <div><strong>Your Review:</strong> {{ movie.review }}</div>
+
+        <div class="movie-actions mt-3">
+          <a href="{{ url_for('main.edit', movie_id=movie.id) }}" class="btn btn-outline-primary">Edit</a>
+          <a href="{{ url_for('main.delete', movie_id=movie.id) }}" class="btn btn-outline-danger">Delete</a>
+          {% if movie.trailer_url %}
+            <a href="{{ movie.trailer_url }}"
+               class="btn btn-outline-secondary"
+               target="_blank" rel="noopener noreferrer">
+              🎬 Trailer
+            </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+
+  {% if not movies %}
+    <div class="alert alert-warning text-center mt-5">
+      No movies found. Try adjusting your filters or search.
+    </div>
+  {% endif %}
+
+</div>
+{% endblock %}

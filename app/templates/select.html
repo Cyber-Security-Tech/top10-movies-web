@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Select a Movie{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h1 class="page-title">Select a Movie</h1>
+
+  <!-- Flash Messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show text-center" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <div class="row">
+    {% for movie in results %}
+      <div class="col-md-4 d-flex">
+        <div class="movie-card w-100">
+          <img src="https://image.tmdb.org/t/p/w500{{ movie['poster_path'] }}" alt="{{ movie['title'] }}" class="img-fluid">
+          <h3>{{ movie['title'] }}</h3>
+          <p>{{ movie['overview'][:150] }}...</p>
+          <a href="{{ url_for('main.select', movie_id=movie['id']) }}" class="btn btn-primary w-100 mt-2">Add Movie</a>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
