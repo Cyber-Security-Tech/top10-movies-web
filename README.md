@@ -9,7 +9,7 @@ A beautifully polished full-stack Flask web application for curating and reviewi
 
 ## 📽️ Demo
 
-![Demo](media/demo/demo.mp4)  
+![Demo](media/demo/demo.gif)  
 🌐 **Live Site:** [https://top10-movies-web.onrender.com](https://top10-movies-web.onrender.com)
 
 ---
